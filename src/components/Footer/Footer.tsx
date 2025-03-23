@@ -1,6 +1,6 @@
 import React from 'react';
-
-type FilteredTodo = 'All' | 'Active' | 'Completed';
+import FilteredTodo from '../../types/FilteredTodo';
+import classNames from 'classnames';
 
 type Props = {
   changeVisibleTodos: (filterType: FilteredTodo) => void;
@@ -21,11 +21,13 @@ export const Footer: React.FC<Props> = ({
 
       {/* Active link should have the 'selected' class */}
       <nav className="filter" data-cy="Filter">
-        {['All', 'Active', 'Completed'].map(title => (
+        {Object.values(FilteredTodo).map(title => (
           <a
             key={title}
             href="#/"
-            className={`filter__link ${filtered === title ? 'selected' : ''}`}
+            className={classNames('filter__link', {
+              selected: filtered === title,
+            })}
             data-cy={`FilterLink${title}`}
             onClick={() => changeVisibleTodos(title as FilteredTodo)}
           >

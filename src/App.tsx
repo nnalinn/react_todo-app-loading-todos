@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { UserWarning } from './UserWarning';
 import { USER_ID } from './api/todos';
 import { getTodos } from './api/todos';
@@ -8,14 +8,13 @@ import { Footer } from './components/Footer/Footer';
 import { TodoList } from './components/TodoList/TodoList';
 // eslint-disable-next-line
 import { ErrorNotification } from './components/ErrorNotification/ErrorNotification';
-
-type FilteredTodo = 'All' | 'Active' | 'Completed';
+import FilteredTodo from './types/FilteredTodo';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [filtered, setFiltered] = useState<FilteredTodo>('All');
+  const [filtered, setFiltered] = useState<FilteredTodo>(FilteredTodo.All);
 
   useEffect(() => {
     const loadTodos = () => {
@@ -37,18 +36,20 @@ export const App: React.FC = () => {
     loadTodos();
   }, []);
 
-  const visibleTodos = (() => {
+  const visibleTodos = useMemo(() => {
     switch (filtered) {
-      case 'Active':
+      case FilteredTodo.Active:
         return todos.filter(td => !td.completed);
-      case 'Completed':
+      case FilteredTodo.Completed:
         return todos.filter(td => td.completed);
       default:
         return todos;
     }
-  })();
+  }, [filtered, todos]);
 
-  const uncompletedTodos = todos.filter(td => !td.completed).length;
+  const uncompletedTodos = useMemo(() => {
+    return todos.filter(td => !td.completed).length;
+  }, [todos]);
 
   const changeVisibleTodos = (filterType: FilteredTodo) => {
     setFiltered(filterType);
@@ -71,7 +72,7 @@ export const App: React.FC = () => {
 
         {!isLoading && <TodoList todos={visibleTodos} />}
 
-        {todos.length && (
+        {todos.length > 0 && (
           <Footer
             changeVisibleTodos={changeVisibleTodos}
             filtered={filtered}

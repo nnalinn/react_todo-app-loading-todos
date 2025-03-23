@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 
 type Props = {
-  changeError: (er: string) => void;
+  changeError: (error: string) => void;
 };
 
 export const Header: React.FC<Props> = ({ changeError }) => {
